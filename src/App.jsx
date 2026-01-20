@@ -2,11 +2,17 @@ import React from "react";
 
 const App = () => {
   return (
-    <div>
-      <h1 class="text-3xl font-bold underline">
-        Hello world!
-      </h1>
-    </div>
+
+    <main>
+      <div className="pattern" />
+      
+      {/*This will wrap our header tag */}
+      <div className="wrapper"> 
+        <header>
+          <h1>Find <span className="text-gradient">Movies</span> You'll Enjoy without the Hassle</h1>
+        </header>
+      </div>
+    </main>
   )
 }
 
