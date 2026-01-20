@@ -10,7 +10,7 @@ const Search = ({searchTerm, setSearchTerm}) => {
                  type="text"
                  placeholder="Search through thousands of movies"
                  value={searchTerm}
-                 onChange={(event) => setSearchTerm(event.target.value)}
+                 onChange={(e) => setSearchTerm(e.target.value)}
                 />
             </div>
         </div>
