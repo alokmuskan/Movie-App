@@ -1,8 +1,11 @@
-import React from "react"; 
+import React, { useState } from "react"; 
+import Search from "./Components/Search.jsx";
 
 const App = () => {
-  return (
+  const [searchTerm, setSearchTerm] = useState("");
 
+
+  return (
     <main>
       <div className="pattern" />
       
@@ -13,8 +16,8 @@ const App = () => {
           <h1>Find <span className="text-gradient">Movies</span> You'll Enjoy without the Hassle</h1>
         </header>
 
-        <p>Search</p>
-
+        {/* State fields can also be passed as props(inputs that you pass into a component) */}
+        <Search searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
       </div>
     </main>
   )
