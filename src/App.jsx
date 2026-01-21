@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react"; 
 import Search from "./Components/Search.jsx";
+import Spinner from "./Components/Spinner.jsx";
+
 
 // API - Application Programming Interface - a set of rules that allows one software application to talk to another
 
@@ -37,7 +39,7 @@ const App = () => {
       }
 
       const data = await response.json();
-      //console.log(data);
+      console.log(data);
 
       if(data.Response === "False") {
         setErrorMessage(data.Error || "Failed to fetch movies");
@@ -73,16 +75,16 @@ const App = () => {
         </header>
 
         <section className="all-movies">
-          <h2>All Movies</h2>
+          <h2 className="mt-[40px]">All Movies</h2>
 
           {isLoading ? (
-            <p className="text-white">Loading...</p>
+            <Spinner />
           ) : errorMessage ? (
             <p className="text-red-500">{errorMessage}</p>
           ) : (
             <ul>
               {movieList.map((movie) => (
-                <p className="text-white">{movie.title}</p>
+                <li key={movie.id} className="text-white">{movie.title}</li>
               ))}
             </ul>
           )}
