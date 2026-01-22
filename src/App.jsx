@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import Search from "./Components/Search.jsx";
 import Spinner from "./Components/Spinner.jsx";
 import MovieCard from "./Components/MovieCard.jsx";
+import { useDebounce } from 'react-use'
+//import { getTrendingMovies, updateSearchCount } from './appwrite.js'
 
 
 // API - Application Programming Interface - a set of rules that allows one software application to talk to another
@@ -19,6 +21,7 @@ const API_OPTIONS ={
 }
 
 const App = () => {
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('')
   const [searchTerm, setSearchTerm] = useState("");
 
   const [errorMessage, setErrorMessage] = useState("");
@@ -26,12 +29,20 @@ const App = () => {
   const [movieList, setMovieList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
-  const fetchMovies = async () => {
+  const [trendingMovies, setTrendingMovies] = useState([]);
+
+  // Debounce the search term to prevent making too many API requests
+  // by waiting for the user to stop typing for 500ms
+  useDebounce(() => setDebouncedSearchTerm(searchTerm), 500, [searchTerm])
+  
+  const fetchMovies = async (query = "") => {
     setIsLoading(true);
     setErrorMessage("");
 
     try{
-      const endpoints = `${API_BASE_URL}/discover/movie?sort_by=popularity.desc`;
+      const endpoints = query
+      ? `${API_BASE_URL}/search/movie?query=${encodeURIComponent(query)}`
+      :`${API_BASE_URL}/discover/movie?sort_by=popularity.desc`;
 
       const response = await fetch(endpoints, API_OPTIONS);
 
@@ -40,7 +51,7 @@ const App = () => {
       }
 
       const data = await response.json();
-      console.log(data);
+      //console.log(data);
 
       if(data.Response === "False") {
         setErrorMessage(data.Error || "Failed to fetch movies");
@@ -48,6 +59,10 @@ const App = () => {
         return;
       }
       setMovieList(data.results || []);
+
+      if(query && data.results.length > 0) {  
+        await updateSearchCount(query, data.results[0]);
+      }
 
     } catch (error) {
       console.log(`Error fetching movies: ${error}`);
@@ -57,9 +72,23 @@ const App = () => {
     }
   }
 
+  const loadTrendingMovies = async () => {
+    try {
+      const movies = await getTrendingMovies();
+
+      setTrendingMovies(movies);
+    } catch (error) {
+      console.error(`Error fetching trending movies: ${error}`);
+    }
+  }
+
   useEffect( () => {
-    fetchMovies();
-  }, []);
+    fetchMovies(debouncedSearchTerm);
+  }, [debouncedSearchTerm]);
+
+  useEffect(() => {
+    loadTrendingMovies();
+  }, [])
 
   return (
     <main>
@@ -74,6 +103,21 @@ const App = () => {
           {/* State fields can also be passed as props(inputs that you pass into a component) */}
           <Search searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
         </header>
+
+        {trendingMovies.length > 0 && (
+          <section className="trending">
+            <h2>Trending Movies</h2>
+
+            <ul>
+              {trendingMovies.map((movie, index) => (
+                <li key={movie.$id}>
+                  <p>{index + 1}</p>
+                  <img src={movie.poster_url} alt={movie.title} />
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
 
         <section className="all-movies">
           <h2 className="mt-[40px]">All Movies</h2>
