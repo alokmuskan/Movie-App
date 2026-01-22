@@ -3,7 +3,7 @@ import Search from "./Components/Search.jsx";
 import Spinner from "./Components/Spinner.jsx";
 import MovieCard from "./Components/MovieCard.jsx";
 import { useDebounce } from 'react-use'
-//import { getTrendingMovies, updateSearchCount } from './appwrite.js'
+//import { getTrendingMovies, updateSearchCount } from './appwrite.js' 
 
 
 // API - Application Programming Interface - a set of rules that allows one software application to talk to another
